@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test OG Image Upload</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .container {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    .preview {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .preview img {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin: 10px 0;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+      max-height: 400px;
+      overflow: auto;
+    }
+    .success {
+      background-color: #e6ffe6;
+      border: 1px solid #99cc99;
+    }
+    .error {
+      background-color: #ffe6e6;
+      border: 1px solid #cc9999;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test OG Image Upload</h1>
+  
+  <div class="container">
+    <h2>Direct Test Upload (No Auth)</h2>
+    <div class="field">
+      <label for="testFile">Select Image File:</label>
+      <input type="file" id="testFile" accept="image/*">
+    </div>
+    <button onclick="uploadTest()">Upload (No Auth)</button>
+    <div id="testResult" class="result"></div>
+    <div id="testPreview" class="preview" style="display: none;">
+      <h3>Uploaded Image Preview:</h3>
+      <img id="testImage" src="" alt="Uploaded image">
+    </div>
+  </div>
+  
+  <script>
+    async function uploadTest() {
+      const fileInput = document.getElementById('testFile');
+      const resultDiv = document.getElementById('testResult');
+      const previewDiv = document.getElementById('testPreview');
+      const previewImg = document.getElementById('testImage');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = 'Please select a file first';
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('ogImage', file);
+      
+      try {
+        resultDiv.className = 'result';
+        resultDiv.textContent = 'Uploading...';
+        
+        const response = await fetch('/api/config/test-upload-og-image', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = JSON.stringify(result, null, 2);
+          
+          if (result.ogImageUrl) {
+            previewDiv.style.display = 'block';
+            previewImg.src = result.ogImageUrl;
+          }
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = JSON.stringify(result, null, 2);
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = `Error: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html> 

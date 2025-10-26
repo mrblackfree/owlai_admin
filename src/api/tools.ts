@@ -4,39 +4,71 @@ import { Tool } from '../db/models/Tool.js';
 import { connectDB } from '../db/connection.js';
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
+import { getLanguage, localizeDocument } from '../utils/language.js';
+import { getMessage } from '../i18n/messages.js';
 
-const toolSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    description: z.string().min(10, "Description must be at least 10 characters"),
-    websiteUrl: z.string().url("Please enter a valid URL"),
-    category: z.string().min(1, "Please select a category"),
-    tags: z.array(z.string()).min(1, "Add at least one tag"),
-    pricing: z.object({
-        type: z.enum(["free", "freemium", "paid", "enterprise"], {
-            required_error: "Please select a pricing type",
-        }),
-        startingPrice: z.union([
-            z.string().transform((val) => {
-                const parsed = parseFloat(val);
-                return isNaN(parsed) ? undefined : parsed;
+// Zod validation messages helper
+const getValidationMessages = (lang: string = 'ko') => {
+    const messages = {
+        ko: {
+            nameMin: "이름은 최소 2자 이상이어야 합니다",
+            descriptionMin: "설명은 최소 10자 이상이어야 합니다",
+            invalidUrl: "올바른 URL을 입력해주세요",
+            selectCategory: "카테고리를 선택해주세요",
+            addTag: "최소 1개 이상의 태그를 추가해주세요",
+            selectPricing: "가격 유형을 선택해주세요",
+            addFeature: "최소 1개 이상의 기능을 추가해주세요"
+        },
+        en: {
+            nameMin: "Name must be at least 2 characters",
+            descriptionMin: "Description must be at least 10 characters",
+            invalidUrl: "Please enter a valid URL",
+            selectCategory: "Please select a category",
+            addTag: "Add at least one tag",
+            selectPricing: "Please select a pricing type",
+            addFeature: "Add at least one feature"
+        }
+    };
+    return messages[lang as 'ko' | 'en'] || messages.ko;
+};
+
+const createToolSchema = (lang: string = 'ko') => {
+    const msg = getValidationMessages(lang);
+    return z.object({
+        name: z.string().min(2, msg.nameMin),
+        description: z.string().min(10, msg.descriptionMin),
+        websiteUrl: z.string().url(msg.invalidUrl),
+        category: z.string().min(1, msg.selectCategory),
+        tags: z.array(z.string()).min(1, msg.addTag),
+        pricing: z.object({
+            type: z.enum(["free", "freemium", "paid", "enterprise"], {
+                required_error: msg.selectPricing,
             }),
-            z.number(),
-            z.undefined()
-        ]),
-    }),
-    features: z.array(z.string()).min(1, "Add at least one feature"),
-    logo: z.string().optional(),
-    status: z.enum(["draft", "published", "archived", "pending", "approved", "rejected"]).default("draft"),
-    isTrending: z.boolean().optional(),
-    isNew: z.boolean().optional(),
-    isUpcoming: z.boolean().optional(),
-    isTopRated: z.boolean().optional(),
-    views: z.number().default(0),
-    votes: z.number().default(0),
-    rating: z.number().default(0),
-    reviews: z.number().default(0),
-    slug: z.string().optional(),
-});
+            startingPrice: z.union([
+                z.string().transform((val) => {
+                    const parsed = parseFloat(val);
+                    return isNaN(parsed) ? undefined : parsed;
+                }),
+                z.number(),
+                z.undefined()
+            ]),
+        }),
+        features: z.array(z.string()).min(1, msg.addFeature),
+        logo: z.string().optional(),
+        status: z.enum(["draft", "published", "archived", "pending", "approved", "rejected"]).default("draft"),
+        isTrending: z.boolean().optional(),
+        isNew: z.boolean().optional(),
+        isUpcoming: z.boolean().optional(),
+        isTopRated: z.boolean().optional(),
+        views: z.number().default(0),
+        votes: z.number().default(0),
+        rating: z.number().default(0),
+        reviews: z.number().default(0),
+        slug: z.string().optional(),
+    });
+};
+
+const toolSchema = createToolSchema('ko');
 
 const handler = createHandler();
 
@@ -100,7 +132,8 @@ handler.get('/stats', async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
-        return res.status(500).json({ error: 'Failed to fetch dashboard statistics' });
+        const lang = getLanguage(req);
+        return res.status(500).json({ error: getMessage('DB_QUERY_FAILED', lang, 'error') });
     }
 });
 
@@ -126,7 +159,8 @@ handler.get('/submissions', async (req: Request, res: Response) => {
         return res.json(formattedSubmissions);
     } catch (error) {
         console.error('Error fetching tool submissions:', error);
-        return res.status(500).json({ error: 'Failed to fetch tool submissions' });
+        const lang = getLanguage(req);
+        return res.status(500).json({ error: getMessage('DB_QUERY_FAILED', lang, 'error') });
     }
 });
 

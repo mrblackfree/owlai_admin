@@ -8,14 +8,19 @@ interface IAuthor {
 
 interface INewsPost {
   title: string;
+  title_ko?: string; // 한글 제목
   slug: string;
   excerpt: string;
+  excerpt_ko?: string; // 한글 발췌문
   content: string;
+  content_ko?: string; // 한글 본문
   date: string;
   author: IAuthor;
   category: string;
+  category_ko?: string; // 한글 카테고리
   imageUrl: string;
   tags: string[];
+  tags_ko?: string[]; // 한글 태그
   status: 'draft' | 'published';
   source: string;
   sourceUrl: string;
@@ -34,14 +39,19 @@ const authorSchema = new mongoose.Schema<IAuthor>({
 // Define the main news post schema
 const newsPostSchema = new mongoose.Schema<INewsPost>({
   title: { type: String, required: true },
+  title_ko: { type: String }, // 한글 제목
   slug: { type: String, required: true, unique: true },
   excerpt: { type: String, required: true },
+  excerpt_ko: { type: String }, // 한글 발췌문
   content: { type: String, required: true },
+  content_ko: { type: String }, // 한글 본문
   date: { type: String, required: true },
   author: { type: authorSchema, required: true },
   category: { type: String, required: true },
+  category_ko: { type: String }, // 한글 카테고리
   imageUrl: { type: String, required: true },
   tags: [{ type: String }],
+  tags_ko: [{ type: String }], // 한글 태그
   status: {
     type: String,
     enum: ['draft', 'published'],

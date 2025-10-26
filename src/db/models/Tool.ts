@@ -2,11 +2,15 @@ import mongoose from 'mongoose';
 
 const toolSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  name_ko: { type: String }, // 한글 이름
   slug: { type: String, required: true, unique: true },
   description: { type: String, required: true },
+  description_ko: { type: String }, // 한글 설명
   websiteUrl: { type: String, required: true },
   category: { type: String, required: true },
+  category_ko: { type: String }, // 한글 카테고리
   tags: [{ type: String }],
+  tags_ko: [{ type: String }], // 한글 태그
   pricing: {
     type: {
       type: String,
@@ -16,6 +20,7 @@ const toolSchema = new mongoose.Schema({
     startingPrice: { type: Number }
   },
   features: [{ type: String }],
+  features_ko: [{ type: String }], // 한글 기능 설명
   logo: { type: String },
   status: {
     type: String,

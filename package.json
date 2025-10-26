@@ -17,7 +17,8 @@
     "backup:db": "tsx src/scripts/backup-database.js",
     "import:tools": "tsx src/scripts/import-tools.js",
     "import:tools:dry": "DRY_RUN=true tsx src/scripts/import-tools.js",
-    "analyze:excel": "tsx -e \"import('./src/scripts/import-tools.js').then(m => m.analyzeExcelStructure('./Ai-Tool-Finder-Frontend/Ai_Tools_Data-Aitoolfinder.xlsx'))\""
+    "analyze:excel": "tsx -e \"import('./src/scripts/import-tools.js').then(m => m.analyzeExcelStructure('./Ai-Tool-Finder-Frontend/Ai_Tools_Data-Aitoolfinder.xlsx'))\"",
+    "translate:data": "tsx src/scripts/translateExistingData.ts"
   },
   "keywords": [],
   "author": "",

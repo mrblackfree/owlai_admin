@@ -1,16 +1,3 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "serverless.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/serverless.js"
-    }
-  ],
-  "buildCommand": "npm run build"
+  "version": 2
 }

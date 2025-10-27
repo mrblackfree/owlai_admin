@@ -1,25 +1,44 @@
-// Vercel Serverless Function
-// Auto-detected by Vercel from api/ folder
+// Vercel Serverless Function Handler
+// This file MUST be at api/index.js for Vercel to detect it
 
-let app;
+const path = require('path');
 
-module.exports = async (req, res) => {
-  // Lazy load the Express app
-  if (!app) {
-    try {
-      const module = await import('../dist/index.js');
-      app = module.default;
-      console.log('Express app loaded successfully');
-    } catch (error) {
-      console.error('Failed to load Express app:', error);
-      return res.status(500).json({ 
-        error: 'Server initialization failed', 
-        message: error.message 
-      });
-    }
+// Cache the Express app instance
+let cachedApp = null;
+
+async function loadApp() {
+  if (cachedApp) {
+    return cachedApp;
   }
-  
-  // Forward the request to Express
-  return app(req, res);
+
+  try {
+    // Import the compiled Express app from dist/index.js
+    const { default: app } = await import('../dist/index.js');
+    cachedApp = app;
+    console.log('[Vercel] Express app loaded successfully');
+    return app;
+  } catch (error) {
+    console.error('[Vercel] Failed to load Express app:', error);
+    throw error;
+  }
+}
+
+// Export the serverless function handler
+module.exports = async (req, res) => {
+  try {
+    const app = await loadApp();
+    
+    // Let Express handle the request
+    return app(req, res);
+  } catch (error) {
+    console.error('[Vercel] Request handler error:', error);
+    
+    // Return detailed error for debugging
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
 };
 

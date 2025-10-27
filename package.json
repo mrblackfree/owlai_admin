@@ -18,7 +18,9 @@
     "import:tools": "tsx src/scripts/import-tools.js",
     "import:tools:dry": "DRY_RUN=true tsx src/scripts/import-tools.js",
     "analyze:excel": "tsx -e \"import('./src/scripts/import-tools.js').then(m => m.analyzeExcelStructure('./Ai-Tool-Finder-Frontend/Ai_Tools_Data-Aitoolfinder.xlsx'))\"",
-    "translate:data": "tsx src/scripts/translateExistingData.ts"
+    "translate:data": "tsx src/scripts/translateExistingData.ts",
+    "mysql:setup": "tsx src/scripts/setupMySQL.ts",
+    "mysql:migrate": "tsx src/scripts/migrateMongoToMySQL.ts"
   },
   "keywords": [],
   "author": "",

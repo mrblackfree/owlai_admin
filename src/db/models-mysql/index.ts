@@ -9,6 +9,12 @@ import NewsPost from './NewsPost.js';
 import Review from './Review.js';
 import ToolSubmission from './ToolSubmission.js';
 import NewsletterSubscription from './NewsletterSubscription.js';
+import SiteConfig from './SiteConfig.js';
+import AdvertisingPlan from './AdvertisingPlan.js';
+import AdvertisingPurchase from './AdvertisingPurchase.js';
+import SalesInquiry from './SalesInquiry.js';
+import Sponsorship from './Sponsorship.js';
+import PaymentSettings from './PaymentSettings.js';
 
 // 모델 관계 설정 (필요시)
 // Tool.hasMany(Review, { foreignKey: 'toolId' });
@@ -23,6 +29,12 @@ export {
   Review,
   ToolSubmission,
   NewsletterSubscription,
+  SiteConfig,
+  AdvertisingPlan,
+  AdvertisingPurchase,
+  SalesInquiry,
+  Sponsorship,
+  PaymentSettings,
 };
 
 // 모든 모델 동기화 함수
